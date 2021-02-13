@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<p><br></p>
+<h2>Lista de Utilizadores</h2>
+<p><br></p>
+
+<table border="16" align="center" cellpadding="8">
+    <tr style="background-color:cornflowerblue; font-weight:bold">
+        <td>Índice</td>
+        <td>Nome</td>
+        <td>Email</td>
+        <td>Password</td>
+    </tr>
+    {% for li in range(0, max) %}
+    <tr>
+        <td style="font-weight:bold">{{li}}</td>
+        {% for co in range(0, 3) %}
+        <td align="left">
+            {{ tabela[li][co] }}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
