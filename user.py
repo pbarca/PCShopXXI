@@ -6,8 +6,8 @@ class User:
         self.reset()
 
     def reset(self):
-        self.id = None
-        self.cliente = ''
+        self.Id = None
+        self.login = ''
         self.email = ''
         self.password = ''
         self.nif = ''
@@ -20,44 +20,45 @@ class User:
         return psycopg2.connect(host=db.Host, database=db.Database, user=db.User, password=db.Password,
                                 sslmode='require')
 
-    def gravar(self, id, email, password):
+    def gravar(self, login, email, password):
         ficheiro = self.herokudb()
         db = ficheiro.cursor()
-        db.execute("CREATE TABLE IF NOT EXISTS usr (nome text,email text, passe text)")
-        db.execute("INSERT INTO usr VALUES (%s, %s, %s)", (id, email, self.code(password)))
+        db.execute(
+            "CREATE TABLE IF NOT EXISTS usr (Id SERIAL NOT NULL,login text,email text, password text,nif text,nome text,morada CHAR(60))")
+        db.execute("INSERT INTO usr VALUES (DEFAULT, %s, %s, %s)", (login, email, self.code(password),))
         ficheiro.commit()
         ficheiro.close()
 
-    def existe(self, id):
+    def existe(self, login):
         try:
             ficheiro = self.herokudb()
             db = ficheiro.cursor()
-            db.execute("SELECT * FROM usr WHERE nome = %s", (id,))
+            db.execute("SELECT * FROM usr WHERE login = %s", (login,))
             valor = db.fetchone()
             ficheiro.close()
         except:
             valor = None
         return valor
 
-    def log(self, id, password):
+    def log(self, login, password):
         ficheiro = self.herokudb()
         db = ficheiro.cursor()
-        db.execute("SELECT * FROM usr WHERE nome = %s and passe = %s", (id, self.code(password),))
+        db.execute("SELECT * FROM usr WHERE login = %s and password = %s", (login, self.code(password),))
         valor = db.fetchone()
         ficheiro.close()
         return valor
 
-    def alterar(self, id, password):
+    def alterar(self, login, password):
         ficheiro = self.herokudb()
         db = ficheiro.cursor()
-        db.execute("UPDATE usr SET passe = %s WHERE nome = %s", (self.code(password), id))
+        db.execute("UPDATE usr SET password = %s WHERE login = %s", (self.code(password), login))
         ficheiro.commit()
         ficheiro.close()
 
-    def apaga(self, id):
+    def apaga(self, login):
         ficheiro = self.herokudb()
         db = ficheiro.cursor()
-        db.execute("DELETE FROM usr WHERE nome = %s", (id,))
+        db.execute("DELETE FROM usr WHERE login = %s", (login,))
         ficheiro.commit()
         ficheiro.close()
 
@@ -65,7 +66,7 @@ class User:
         try:
             ficheiro = self.herokudb()
             db = ficheiro.cursor()
-            db.execute("select * from usr ORDER BY nome")
+            db.execute("select * from usr")
             valor = db.fetchall()
             ficheiro.close()
         except:
